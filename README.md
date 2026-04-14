@@ -6,9 +6,9 @@ An interactive solar system you can explore in Virtual Reality, built with React
 
 ## Preview
 
-https://solar-system.victorgalvez.dev/preview.mp4
+<video src="https://github.com/victorgalvez56/solar-system-vr/releases/download/v0.1.0/preview.mp4" controls width="720"></video>
 
-<video src="https://solar-system.victorgalvez.dev/preview.mp4" controls width="720"></video>
+> GitHub renders the `<video>` tag inline when the `src` points to a release asset on `github.com`. Also hosted at https://solar-system.victorgalvez.dev/preview.mp4.
 
 ## Features
 
