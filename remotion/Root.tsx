@@ -7,6 +7,7 @@ export const RemotionRoot = () => {
       id="SolarSystemVideo"
       component={SolarSystemVideo}
       durationInFrames={300}
+      // 240 scene + 60 standalone outro (see SolarSystemVideo.tsx)
       fps={30}
       width={1280}
       height={720}

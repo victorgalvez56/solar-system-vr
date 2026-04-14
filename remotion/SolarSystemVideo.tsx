@@ -1,6 +1,9 @@
-import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate, Easing } from 'remotion';
+import { AbsoluteFill, Sequence, useCurrentFrame, useVideoConfig, interpolate, Easing } from 'remotion';
 import { ThreeCanvas } from '@remotion/three';
 import * as THREE from 'three';
+
+const SCENE_FRAMES = 240; // 8s of scene
+const OUTRO_FRAMES = 60;  // 2s standalone outro card
 
 const PLANETS = [
   { name: 'Mercurio', radius: 0.2, color: '#8c8c8c', distance: 4, orbitSpeed: 0.8 },
@@ -76,23 +79,22 @@ const Stars = () => {
   );
 };
 
-export const SolarSystemVideo = () => {
+const Scene = () => {
   const frame = useCurrentFrame();
-  const { width, height, durationInFrames } = useVideoConfig();
+  const { width, height } = useVideoConfig();
 
-  const cameraRotation = interpolate(frame, [0, durationInFrames], [0, Math.PI * 0.6], {
+  const cameraRotation = interpolate(frame, [0, SCENE_FRAMES], [0, Math.PI * 0.6], {
     easing: Easing.inOut(Easing.ease),
   });
   const camDistance = 38;
   const camX = Math.sin(cameraRotation) * camDistance;
   const camZ = Math.cos(cameraRotation) * camDistance;
-  const camY = interpolate(frame, [0, durationInFrames], [18, 10], {
+  const camY = interpolate(frame, [0, SCENE_FRAMES], [18, 10], {
     easing: Easing.inOut(Easing.ease),
   });
 
   const titleOpacity = interpolate(frame, [0, 20, 80, 100], [0, 1, 1, 0], { extrapolateRight: 'clamp' });
   const subtitleOpacity = interpolate(frame, [10, 30, 80, 100], [0, 1, 1, 0], { extrapolateRight: 'clamp' });
-  const outroOpacity = interpolate(frame, [240, 260, 300], [0, 1, 1], { extrapolateLeft: 'clamp' });
 
   return (
     <AbsoluteFill style={{ background: '#000' }}>
@@ -141,21 +143,67 @@ export const SolarSystemVideo = () => {
           Explora el sistema solar en realidad virtual · React Three Fiber + WebXR
         </div>
       </AbsoluteFill>
+    </AbsoluteFill>
+  );
+};
 
-      <AbsoluteFill
+const OutroCard = () => {
+  const frame = useCurrentFrame();
+  const fadeIn = interpolate(frame, [0, 15], [0, 1], { extrapolateRight: 'clamp' });
+  const lift = interpolate(frame, [0, 25], [16, 0], { extrapolateRight: 'clamp' });
+
+  return (
+    <AbsoluteFill
+      style={{
+        background: 'linear-gradient(160deg, #0a0a1a 0%, #050510 100%)',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontFamily: 'system-ui, -apple-system, sans-serif',
+        color: 'white',
+        gap: 18,
+      }}
+    >
+      <div
         style={{
-          opacity: outroOpacity,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontFamily: 'system-ui, -apple-system, sans-serif',
-          color: 'white',
-          fontSize: 40,
-          fontWeight: 700,
+          opacity: fadeIn,
+          transform: `translateY(${lift}px)`,
+          fontSize: 22,
+          letterSpacing: 4,
+          textTransform: 'uppercase',
+          color: '#94a3b8',
+        }}
+      >
+        Explóralo en vivo
+      </div>
+      <div
+        style={{
+          opacity: fadeIn,
+          transform: `translateY(${lift}px)`,
+          fontSize: 56,
+          fontWeight: 800,
+          letterSpacing: -1,
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
         }}
       >
         solar-system.victorgalvez.dev
-      </AbsoluteFill>
+      </div>
+    </AbsoluteFill>
+  );
+};
+
+export const SolarSystemVideo = () => {
+  return (
+    <AbsoluteFill style={{ background: '#000' }}>
+      <Sequence from={0} durationInFrames={SCENE_FRAMES}>
+        <Scene />
+      </Sequence>
+      <Sequence from={SCENE_FRAMES} durationInFrames={OUTRO_FRAMES}>
+        <OutroCard />
+      </Sequence>
     </AbsoluteFill>
   );
 };
